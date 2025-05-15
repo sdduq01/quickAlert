@@ -8,7 +8,6 @@ client = bigquery.Client()
 def get_campaigns(request):
     # Manejo de preflight CORS
     if request.method == 'OPTIONS':
-        # Permite cualquier origen o especifica tu dominio
         resp = make_response('', 204)
         resp.headers['Access-Control-Allow-Origin'] = '*'
         resp.headers['Access-Control-Allow-Methods'] = 'GET,OPTIONS'
@@ -24,7 +23,7 @@ def get_campaigns(request):
     result = client.query(query)
     campaigns = [row["campaign"] for row in result]
 
-    # Construir respuesta JSON con CORS
-    resp = make_response(jsonify(campaigns), 200)
+    # ✅ Retornar como objeto con clave campaigns
+    resp = make_response(jsonify({"campaigns": campaigns}), 200)
     resp.headers['Access-Control-Allow-Origin'] = '*'
     return resp

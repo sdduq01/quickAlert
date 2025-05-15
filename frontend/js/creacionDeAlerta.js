@@ -1,134 +1,105 @@
-// js/creacionDeAlerta.js
-console.log("✅ creacionDeAlerta.js cargado");
+const API_BASE = "https://us-central1-kam-bi-451418.cloudfunctions.net";
 
-document.addEventListener("DOMContentLoaded", () => {
-  console.log("✅ DOM listo para creacionDeAlerta.js");
+document.addEventListener("DOMContentLoaded", async () => {
+  const userEmail = localStorage.getItem("userEmail");
 
-  // Prefill del email autenticado
-  const storedEmail = localStorage.getItem("userEmail");
-  if (storedEmail) {
-    const emailInput = document.getElementById("email");
-    if (emailInput) {
-      emailInput.value = storedEmail;
-      console.log("Email pre‑poblado:", storedEmail);
-    }
+  // Validación de dominio
+  // if (!userEmail || !userEmail.endsWith("@konecta.com")) {
+  if (!userEmail || !userEmail.endsWith("@gmail.com")) {
+    alert("Unauthorized access. Please log in with your @konecta.com account.");
+    window.location.href = "index.html";
+    return;
   }
 
-  // Elementos del formulario
-  const campaignSelect     = document.getElementById("campaign");
-  const metricSelect       = document.getElementById("metric");
-  const createAlertButton  = document.getElementById("create-alert-button");
-  const resumen            = document.getElementById("resumen");
+  const campaignSelect = document.getElementById("campaign");
+  const metricSelect = document.getElementById("metric");
 
-  const API_BASE = "https://us-central1-kam-bi-451418.cloudfunctions.net";
+  // Cargar campañas
+  try {
+    const response = await fetch(`${API_BASE}/get-campaigns`);
+    if (!response.ok) throw new Error("Error fetching campaigns");
+    const data = await response.json();
 
-  const showError = (msg, err) => {
-    alert(`⚠️ ${msg}`);
-    console.error(`❌ ${msg}`, err);
-  };
-
-  const populateSelect = (el, items, placeholder) => {
-    el.innerHTML = `<option value="">${placeholder}</option>`;
-    items.forEach(i => {
-      const opt = document.createElement("option");
-      opt.value       = i;
-      opt.textContent = i;
-      el.appendChild(opt);
+    data.campaigns.forEach(campaign => {
+      const option = document.createElement("option");
+      option.value = campaign;
+      option.textContent = campaign;
+      campaignSelect.appendChild(option);
     });
-  };
 
-  // 1) Fetch campañas
-  const fetchCampaigns = async () => {
-    try {
-      const resp = await fetch(`${API_BASE}/get-campaigns`);
-      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-      const data = await resp.json();
-      populateSelect(campaignSelect, data, "Seleccione una campaña");
-    } catch (e) {
-      showError("No se pudieron cargar las campañas.", e);
-    }
-  };
+  } catch (error) {
+    console.error("Error loading campaigns:", error);
+    alert("No se pudieron cargar las campañas");
+  }
 
-  // 2) Fetch métricas
-  const fetchMetrics = async (campaign) => {
+  // Al seleccionar campaña, cargar métricas asociadas
+  campaignSelect.addEventListener("change", async () => {
+    const selectedCampaign = campaignSelect.value;
+    metricSelect.innerHTML = "<option value=''>Cargando...</option>";
+
     try {
-      const resp = await fetch(`${API_BASE}/get-metrics`, {
-        method:  "POST",
-        headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ campaign })
+      const response = await fetch(`${API_BASE}/get-metrics?campaign=${encodeURIComponent(selectedCampaign)}`);
+      if (!response.ok) throw new Error("Error fetching metrics");
+      const data = await response.json();
+
+      metricSelect.innerHTML = "<option value=''>Seleccione una métrica</option>";
+      data.metrics.forEach(metric => {
+        const option = document.createElement("option");
+        option.value = metric;
+        option.textContent = metric;
+        metricSelect.appendChild(option);
       });
-      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-      const data = await resp.json();
-      populateSelect(metricSelect, data, "Seleccione una métrica");
-    } catch (e) {
-      showError("No se pudieron cargar las métricas.", e);
+    } catch (error) {
+      console.error("Error loading metrics:", error);
+      alert("No se pudieron cargar las métricas");
+      metricSelect.innerHTML = "<option value=''>Error al cargar</option>";
     }
-  };
+  });
 
-  // 3) Crear alerta
-  const handleCreateAlert = async () => {
-    const campaign  = campaignSelect.value.trim();
-    const metric    = metricSelect.value.trim();
-    const target    = document.getElementById("target").value.trim();
-    const frequency = document.getElementById("frequency").value.trim();
-    const whatsapp  = document.getElementById("whatssapp").value.trim();
-    const email     = document.getElementById("email").value.trim();
-    const userEmail = localStorage.getItem("userEmail");
+  // Crear alerta
+  document.getElementById("create-alert-button").addEventListener("click", async () => {
+    const campaign = campaignSelect.value;
+    const metric = metricSelect.value;
+    const target = document.getElementById("target").value;
+    const frequency = document.getElementById("frequency").value;
+    const whatsapp = document.getElementById("whatssapp").value;
+    const email = document.getElementById("email").value;
 
     if (!campaign || !metric || !target) {
-      alert("❗ Completa Campaign, Metric y Target.");
+      alert("Por favor completa todos los campos obligatorios.");
       return;
     }
 
     const alertId = crypto.randomUUID();
-    const data = { alertId, userEmail, campaign, metric, target, frequency, whatsapp, email, enable: true };
+    const enable = true;
 
-    const msg = `
-🚨 Crear alerta:
-
-🆔 ID: ${alertId}
-👤 User: ${userEmail}
-📌 Campaign: ${campaign}
-📊 Metric:   ${metric}
-🎯 Target:   ${target}
-⏱ Frecuencia: ${frequency || "N/A"}
-📱 WhatsApp:  ${whatsapp || "N/A"}
-📧 Email:     ${email || "N/A"}
-
-¿Continuar?`;
-
-    if (!confirm(msg)) return;
-
-    resumen.innerHTML = `
-      <strong>Summary:</strong><br/>
-      Alert <strong>${alertId}</strong> for <strong>${campaign}</strong> / <strong>${metric}</strong>,
-      target <strong>${target}</strong>, freq <strong>${frequency || "N/A"}</strong>,
-      WA <strong>${whatsapp || "N/A"}</strong>, email <strong>${email || "N/A"}</strong>,
-      user <strong>${userEmail}</strong>.
-    `;
+    const payload = {
+      alertId,
+      userEmail,
+      campaign,
+      metric,
+      target,
+      frequency,
+      whatsapp,
+      email,
+      enable
+    };
 
     try {
       const resp = await fetch(`${API_BASE}/save-alert`, {
-        method:  "POST",
+        method: "POST",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify(data)
+        body: JSON.stringify(payload)
       });
-      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-      alert("✅ Alerta creada correctamente.");
-    } catch (e) {
-      showError("Error al crear la alerta.", e);
+
+      if (!resp.ok) throw new Error("Error saving alert");
+
+      const result = await resp.json();
+      document.getElementById("resumen").innerHTML =
+        `<p class="success-message">✅ Alerta creada exitosamente con ID: ${result.alertId}</p>`;
+    } catch (error) {
+      console.error("Error creating alert:", error);
+      alert("Hubo un error al crear la alerta.");
     }
-  };
-
-  // Inicializar dropdowns
-  fetchCampaigns();
-  campaignSelect.addEventListener("change", () => {
-    const c = campaignSelect.value;
-    if (c) fetchMetrics(c);
-    else  populateSelect(metricSelect, [], "Seleccione una métrica");
   });
-
-  // Botón
-  if (createAlertButton) createAlertButton.addEventListener("click", handleCreateAlert);
-  else console.warn("⚠️ No se encontró create-alert-button");
 });

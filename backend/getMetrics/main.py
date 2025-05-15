@@ -1,41 +1,44 @@
 import functions_framework
 from google.cloud import bigquery
-from flask import jsonify, make_response, request
+from flask import jsonify, request
 
 client = bigquery.Client()
 
 @functions_framework.http
 def get_metrics(request):
-    # Preflight CORS
     if request.method == 'OPTIONS':
-        resp = make_response('', 204)
-        resp.headers['Access-Control-Allow-Origin'] = '*'
-        resp.headers['Access-Control-Allow-Methods'] = 'POST,OPTIONS'
-        resp.headers['Access-Control-Allow-Headers'] = 'Content-Type'
-        return resp
+        headers = {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Max-Age': '3600'
+        }
+        return ('', 204, headers)
 
-    # Body JSON
-    request_json = request.get_json(silent=True) or {}
-    campaign = request_json.get("campaign")
+    headers = {
+        'Access-Control-Allow-Origin': '*'
+    }
+
+    campaign = request.args.get('campaign')
     if not campaign:
-        return ("Bad Request: 'campaign' parameter is required", 400)
+        return jsonify({"error": "Missing campaign parameter"}), 400, headers
 
-    # Query parametrizado
     query = """
-    SELECT DISTINCT Metrica AS metric
-    FROM `kam-bi-451418.QuickAlert.LoadKpis`
-    WHERE Campana = @campaign
-    ORDER BY metric
+        SELECT DISTINCT Metrica AS metric
+        FROM `kam-bi-451418.QuickAlert.LoadKpis`
+        WHERE Campana = @campaign
+        ORDER BY metric
     """
     job_config = bigquery.QueryJobConfig(
         query_parameters=[
             bigquery.ScalarQueryParameter("campaign", "STRING", campaign)
         ]
     )
-    result = client.query(query, job_config=job_config)
-    metrics = [row["metric"] for row in result]
 
-    # Respuesta con CORS
-    resp = make_response(jsonify(metrics), 200)
-    resp.headers['Access-Control-Allow-Origin'] = '*'
-    return resp
+    try:
+        query_job = client.query(query, job_config=job_config)
+        results = query_job.result()
+        metrics = [row["metric"] for row in results]
+        return jsonify({"metrics": metrics}), 200, headers
+    except Exception as e:
+        return jsonify({"error": "Internal Server Error", "details": str(e)}), 500, headers
