@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Login to access Konecta Alerts platform" />
+  <title>Konecta Login</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet" />
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="./styles/index.css" />
+
+  <!-- Google Identity Services -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+  <!-- JS -->
+  <script src="./js/googleClassicLogin.js" defer></script>
+</head>
+<body>
+  <main class="login-container">
+    <img src="./assets/images/Konecta_Logo_RGB_White.png" alt="Konecta logo" class="logo" />
+    <h1 class="title">Welcome to Quickalert</h1>
+
+    <form id="loginForm" class="form" novalidate>
+      <label for="email" class="label">Email</label>
+      <input type="email" id="email" name="email" class="input" required />
+
+      <label for="password" class="label">Password</label>
+      <input type="password" id="password" name="password" class="input" required />
+
+      <div class="form-links">
+        <a href="#" class="link">Forgot password?</a>
+        <a href="#" class="link">Create account</a>
+      </div>
+
+      <button type="submit" class="primary-button">Login</button>
+    </form>
+
+    <!-- Contenedor para botón oficial Google Identity Services 
+     <div id="google-login"></div>-->
+    
+
+    <div class="google-button-wrapper">
+      <div id="google-button"></div>
+    </div>
+
+    <p id="error-message" class="error-message" aria-live="assertive"></p>
+  </main>
+</body>
+</html>
