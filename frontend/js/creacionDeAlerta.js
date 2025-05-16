@@ -3,18 +3,20 @@ const API_BASE = "https://us-central1-kam-bi-451418.cloudfunctions.net";
 document.addEventListener("DOMContentLoaded", async () => {
   const userEmail = localStorage.getItem("userEmail");
 
-  // Validación de dominio
-  // if (!userEmail || !userEmail.endsWith("@konecta.com")) {
   if (!userEmail || !userEmail.endsWith("@gmail.com")) {
     alert("Unauthorized access. Please log in with your @konecta.com account.");
     window.location.href = "index.html";
     return;
   }
 
+  const emailInput = document.getElementById("email");
+  if (userEmail && emailInput) {
+    emailInput.value = userEmail;
+  }
+
   const campaignSelect = document.getElementById("campaign");
   const metricSelect = document.getElementById("metric");
 
-  // Cargar campañas
   try {
     const response = await fetch(`${API_BASE}/get-campaigns`);
     if (!response.ok) throw new Error("Error fetching campaigns");
@@ -32,7 +34,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     alert("No se pudieron cargar las campañas");
   }
 
-  // Al seleccionar campaña, cargar métricas asociadas
   campaignSelect.addEventListener("change", async () => {
     const selectedCampaign = campaignSelect.value;
     metricSelect.innerHTML = "<option value=''>Cargando...</option>";
@@ -56,13 +57,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  // Crear alerta
-  document.getElementById("create-alert-button").addEventListener("click", async () => {
+  // Mostrar modal de confirmación
+  document.getElementById("create-alert-button").addEventListener("click", () => {
     const campaign = campaignSelect.value;
     const metric = metricSelect.value;
     const target = document.getElementById("target").value;
     const frequency = document.getElementById("frequency").value;
-    const whatsapp = document.getElementById("whatssapp").value;
     const email = document.getElementById("email").value;
 
     if (!campaign || !metric || !target) {
@@ -70,6 +70,34 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
+    // Mostrar resumen dentro del modal
+    const resumen = `
+      <strong>Campaña:</strong> ${campaign}<br>
+      <strong>Métrica:</strong> ${metric}<br>
+      <strong>Objetivo:</strong> ${target}<br>
+      <strong>Frecuancia:</strong> ${frequency}<br>
+      <strong>Email:</strong> ${email}
+    `;
+    document.getElementById("modal-resumen").innerHTML = resumen;
+
+    document.getElementById("modal").classList.remove("hidden");
+  });
+
+  // Botón Confirmar del modal
+  document.getElementById("confirmAlertButton").addEventListener("click", confirmarCreacionAlerta);
+
+  // Botón Cancelar del modal
+  document.getElementById("cancelAlertButton").addEventListener("click", () => {
+    document.getElementById("modal").classList.add("hidden");
+  });
+
+  async function confirmarCreacionAlerta() {
+    const campaign = campaignSelect.value;
+    const metric = metricSelect.value;
+    const target = document.getElementById("target").value;
+    const frequency = document.getElementById("frequency").value;
+    const whatsapp = document.getElementById("whatssapp").value;
+    const email = document.getElementById("email").value;
     const alertId = crypto.randomUUID();
     const enable = true;
 
@@ -94,12 +122,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       if (!resp.ok) throw new Error("Error saving alert");
 
-      const result = await resp.json();
       document.getElementById("resumen").innerHTML =
-        `<p class="success-message">✅ Alerta creada exitosamente con ID: ${result.alertId}</p>`;
+        `<p class="success-message">✅ Alerta creada exitosamente con ID: ${alertId}</p>`;
+
+      // Cerrar modal
+      document.getElementById("modal").classList.add("hidden");
+
     } catch (error) {
       console.error("Error creating alert:", error);
       alert("Hubo un error al crear la alerta.");
     }
-  });
+  }
 });

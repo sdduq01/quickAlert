@@ -1,109 +1,167 @@
 :root {
-    --konecta-blue: #2800c8;
-    --blue-navy: #0f0f72;
-    --sky-blue: #a6b7ff;
-    --yellow-tomorrow: #f0fa00;
-    --snow-white: #ffffff;
-    --steel-gray: #f2f0eb;
-    --pitch-black: #111111;
-    --sm: 14px;
-    --md: 16px;
-    --lg: 18px;
-  }
-  
-  body {
-    margin: 0;
-    background-color: var(--konecta-blue);
-    font-family: 'Poppins', sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
-  }
-  
-  .create-alert {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 20px;
-    width: 100%;
-  }
-  
-  .form-container {
-    width: 300px;
-    margin: 10px;
-  }
-  
-  .logo {
-    width: 250px;
-    margin-bottom: 20px;
-  }
-  
-  .title {
-    font-size: var(--lg);
-    color: var(--snow-white);
-    text-align: center;
-    margin: 0 0 20px;
-  }
-  
-  .label {
-    font-size: var(--sm);
-    font-weight: bold;
-    color: var(--snow-white);
-    margin-bottom: 4px;
-  }
-  
-  .input {
-    background-color: var(--steel-gray);
-    border: none;
-    border-radius: 8px;
-    height: 28px;
-    font-size: var(--md);
-    padding: 8px;
-    margin-bottom: 12px;
-    width: 100%;
-    box-sizing: border-box;
-    height: 15%;
-  }
-  
-  .primary-button {
-    background: var(--blue-navy);
-    color: var(--snow-white);
-    border: none;
-    border-radius: 8px;
-    padding: 12px;
-    cursor: pointer;
-    font-size: var(--md);
-    font-weight: bold;
-    text-align: center;
-    text-decoration: none;
-    margin: 5px;
-    display: inline-block;
-    min-width: 160px;
-  }
-  
-  .parameters {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-  
-  .resumen {
-    color: var(--snow-white);
-    text-align: center;
-    max-width: 600px;
-    margin-top: 20px;
-  }
-  
-  .button-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-    flex-wrap: wrap;
-  }
-  
-  .form {
-    display: flex;
-    flex-direction: column;
-  }
-  
+  --konecta-blue: #2800c8;
+  --blue-navy: #0f0f72;
+  --sky-blue: #a6b7ff;
+  --yellow-tomorrow: #f0fa00;
+  --snow-white: #ffffff;
+  --steel-gray: #f2f0eb;
+  --pitch-black: #111111;
+  --sm: 14px;
+  --md: 16px;
+  --lg: 18px;
+}
+
+body {
+  margin: 0;
+  background-color: var(--konecta-blue);
+  font-family: 'Poppins', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.create-alert {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px;
+  width: 100%;
+}
+
+.form-container {
+  width: 300px;
+  margin: 10px;
+}
+
+.logo {
+  width: 250px;
+  margin-bottom: 20px;
+}
+
+.title {
+  font-size: var(--lg);
+  color: var(--snow-white);
+  text-align: center;
+  margin: 0 0 20px;
+}
+
+.label {
+  font-size: var(--sm);
+  font-weight: bold;
+  color: var(--snow-white);
+  margin-bottom: 4px;
+}
+
+.input {
+  background-color: var(--steel-gray);
+  border: none;
+  border-radius: 8px;
+  height: 28px;
+  font-size: var(--md);
+  padding: 8px;
+  margin-bottom: 12px;
+  width: 100%;
+  box-sizing: border-box;
+  height: 15%;
+}
+
+.primary-button {
+  background: var(--blue-navy);
+  color: var(--snow-white);
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  font-size: var(--md);
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  margin: 5px;
+  display: inline-block;
+  min-width: 160px;
+}
+
+.parameters {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.resumen {
+  color: var(--snow-white);
+  text-align: center;
+  max-width: 600px;
+  margin-top: 20px;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- Modal de Confirmación ---------- */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(17, 17, 17, 0.6); /* pitch-black con opacidad */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  background-color: var(--snow-white);
+  padding: 24px;
+  border-radius: 12px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  text-align: center;
+}
+
+.modal-content h2 {
+  margin-top: 0;
+  color: var(--blue-navy);
+  font-size: var(--lg);
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+}
+
+.modal-buttons button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: var(--md);
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#confirmButton {
+  background-color: var(--blue-navy);
+  color: var(--snow-white);
+}
+
+#cancelButton {
+  background-color: var(--steel-gray);
+  color: var(--pitch-black);
+}

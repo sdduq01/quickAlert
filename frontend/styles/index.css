@@ -141,6 +141,7 @@
   /* Mensajes de error */
   .error-message {
     margin-top: 1rem;
+    margin-bottom: 3rem;
     color: #ff5252;
     font-size: 0.9rem;
     min-height: 1.2rem;

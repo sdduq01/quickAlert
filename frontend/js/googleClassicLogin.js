@@ -1,10 +1,7 @@
-// Dominio permitido
-//const allowedDomain = "@konecta.com";  // Ajusta aquí al dominio real de tu cuenta
-const allowedDomain = "@gmail.com";  // Ajusta aquí al dominio real de tu cuenta
+//const allowedDomain = "@konecta.com";
+const allowedDomain = "@gmail.com";
 
-// Función que maneja la respuesta de Google
 function handleCredentialResponse(response) {
-  // Decodificar el JWT para obtener el email
   const decoded = parseJwt(response.credential);
   const email = decoded.email;
 
@@ -12,20 +9,16 @@ function handleCredentialResponse(response) {
 
   if (email && email.endsWith(allowedDomain)) {
     console.log("Dominio válido. Guardando email y redirigiendo...");
-    // Guardar el email en localStorage
     localStorage.setItem('userEmail', email);
 
-    // Redirigir
     window.location.href = "creacionDeAlerta.html";
   } else {
     console.warn("Dominio inválido:", email);
-    // Mostrar error al usuario
     document.getElementById("error-message").textContent =
       "Solo se permite ingresar con correo " + allowedDomain;
   }
 }
 
-// Función para decodificar el JWT de Google
 function parseJwt(token) {
   const base64Url = token.split('.')[1];
   const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -39,23 +32,18 @@ function parseJwt(token) {
 }
 
 window.onload = function() {
-  // Inicializar Google Identity Services
   google.accounts.id.initialize({
-    client_id: "994887374053-nel9101klo1kv4k1j0thga967ld9mvi1.apps.googleusercontent.com",
+    client_id: "994887374053-nel9101klo1kv4k1j0thga967ld9mvi1.apps.googleusercontent.com", //Llave que se debe disponibilizar en console APIis & Services/Credentials
     callback: handleCredentialResponse
   });
 
-  // Renderizar el botón oficial dentro del contenedor #google-button
   google.accounts.id.renderButton(
     document.getElementById("google-button"),
     {
       theme: "outline",
       size: "large",
-      width: "280",    // ancho fijo para evitar saltos
-      type: "standard" // estilo del botón
+      width: "280",
+      type: "standard"
     }
   );
-
-  // Opcional: mostrar prompt automático
-  // google.accounts.id.prompt();
 };

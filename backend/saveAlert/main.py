@@ -1,60 +1,45 @@
 import functions_framework
+from flask import jsonify, request
 from google.cloud import bigquery
-from flask import jsonify, make_response, request
-
-# Initialize BigQuery client
-db_client = bigquery.Client()
+from datetime import datetime
+import os
 
 @functions_framework.http
 def save_alert(request):
-    """
-    HTTP Cloud Function to save an alert into BigQuery table SavedAlerts.
-    Expects JSON body with fields:
-      alertId, userEmail, campaign, metric, target,
-      frequency, whatsapp, email, enable (bool)
-    """
-    # Handle CORS preflight
-    if request.method == 'OPTIONS':
-        resp = make_response('', 204)
-        resp.headers['Access-Control-Allow-Origin'] = '*'
-        resp.headers['Access-Control-Allow-Methods'] = 'POST,OPTIONS'
-        resp.headers['Access-Control-Allow-Headers'] = 'Content-Type'
-        return resp
-
-    data = request.get_json(silent=True)
-    if not data:
-        return make_response('Bad Request: JSON body required', 400)
-
-    required_fields = [
-        'alertId', 'userEmail', 'campaign', 'metric',
-        'target', 'frequency', 'whatsapp', 'email', 'enable'
-    ]
-
-    missing = [f for f in required_fields if f not in data]
-    if missing:
-        return make_response(f"Bad Request: Missing fields {missing}", 400)
-
-    # Prepare row for insertion
-    table_id = 'kam-bi-451418.QuickAlert.SavedAlerts'
-    row = {
-        'alertId':   data['alertId'],
-        'userEmail': data['userEmail'],
-        'campaign':  data['campaign'],
-        'metric':    data['metric'],
-        'target':    data['target'],
-        'frequency': data['frequency'],
-        'whatsapp':  data['whatsapp'],
-        'email':     data['email'],
-        'enable':    data['enable']
+    headers = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS'
     }
 
-    # Insert row into BigQuery
-    errors = db_client.insert_rows_json(table_id, [row])  # API: list of rows
-    if errors:
-        # Return errors if insertion failed
-        return make_response(f"Error inserting into BigQuery: {errors}", 500)
+    if request.method == 'OPTIONS':
+        return '', 204, headers
 
-    # Success response with CORS
-    resp = make_response(jsonify({'status': 'success', 'alertId': data['alertId']}), 200)
-    resp.headers['Access-Control-Allow-Origin'] = '*'
-    return resp
+    try:
+        data = request.get_json()
+
+        client = bigquery.Client()
+        table_id = "kam-bi-451418.QuickAlert.SavedAlerts"
+
+        row_to_insert = {
+            "alertId": data.get("alertId", ""),
+            "userEmail": data.get("userEmail", ""),
+            "campaign": data.get("campaign", ""),
+            "metric": data.get("metric", ""),
+            "target": data.get("target", ""),
+            "frequency": data.get("frequency", ""),
+            "whatsapp": data.get("whatsapp", None),
+            "email": data.get("email", ""),
+            "enabled": data.get("enable", True),
+            "creationTimestamp": datetime.utcnow().isoformat()
+        }
+
+        errors = client.insert_rows_json(table_id, [row_to_insert])
+
+        if errors == []:
+            return jsonify({"status": "success"}), 200, headers
+        else:
+            return jsonify({"status": "error", "details": errors}), 500, headers
+
+    except Exception as e:
+        return jsonify({"error": "Internal Server Error", "details": str(e)}), 500, headers
