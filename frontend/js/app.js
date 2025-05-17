@@ -25,7 +25,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   };
 
-  // 1) Traer campañas
   const fetchCampaigns = async () => {
     try {
       const resp = await fetch(`${API_BASE}/get-campaigns`);
@@ -37,7 +36,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  // 2) Traer métricas según campaña seleccionada
   const fetchMetrics = async (campaign) => {
     try {
       const resp = await fetch(`${API_BASE}/get-metrics`, {
@@ -53,7 +51,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  // 3) Crear alerta
   const handleCreateAlert = async () => {
     const campaign  = campaignSelect.value.trim();
     const metric    = metricSelect.value.trim();
@@ -68,19 +65,18 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // Generar ID único para la alerta
     const alertId = crypto.randomUUID();
 
     const data = {
-      alertId,        // ID único
-      userEmail,      // correo autenticado
+      alertId,
+      userEmail,
       campaign,
       metric,
       target,
       frequency,
       whatsapp,
       email,
-      enable: true    // alerta activa
+      enable: true
     };
 
     const confirmMsg = `
@@ -123,7 +119,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  // Inicialización
   fetchCampaigns();
 
   campaignSelect.addEventListener("change", () => {

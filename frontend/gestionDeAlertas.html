@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gestión de Alertas - QuickAlert</title>
+  <link rel="stylesheet" href="./styles/gestionDeAlertas.css" />
+</head>
+<body>
+  <header class="header">
+    <img src="./assets/images/Konecta_Logo_RGB_White.png" alt="Logo Konecta" class="logo" />
+    <h1>Gestión de Alertas</h1>
+    <p id="user-info"></p>
+  </header>
+
+  <main>
+    <section id="alerts-container" aria-live="polite">
+      <p>Cargando alertas...</p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2025 QuickAlert - Konecta</p>
+  </footer>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const userEmail = localStorage.getItem("userEmail");
+
+      if (!userEmail || !userEmail.endsWith("@konecta.com") && !userEmail.endsWith("@gmail.com")) {
+        alert("Debes iniciar sesión con un correo autorizado.");
+        window.location.href = "index.html";
+        return;
+      }
+
+      document.getElementById("user-info").textContent = `Sesión iniciada: ${userEmail}`;
+      fetchAlerts(userEmail);
+    });
+
+    function fetchAlerts(userEmail) {
+      const url = `https://management-alerts-vcl6o2ionq-uc.a.run.app/?user_email=${encodeURIComponent(userEmail)}`;
+      fetch(url)
+        .then(res => {
+          if (!res.ok) throw new Error("No se pudieron obtener las alertas");
+          return res.json();
+        })
+        .then(renderAlerts)
+        .catch(err => {
+          document.getElementById("alerts-container").innerHTML = `<p class="error">${err.message}</p>`;
+        });
+    }
+
+    function renderAlerts(alerts) {
+      const container = document.getElementById("alerts-container");
+      container.innerHTML = "";
+
+      if (alerts.length === 0) {
+        container.innerHTML = "<p>No tienes alertas configuradas.</p>";
+        return;
+      }
+
+      alerts.forEach(alert => {
+        const card = document.createElement("div");
+        card.className = "alert-card";
+        card.innerHTML = `
+          <h2>${alert.campaign}</h2>
+          <p><strong>Métrica:</strong> ${alert.metric}</p>
+          <p><strong>Objetivo:</strong> ${alert.target}</p>
+          <p><strong>Frecuencia:</strong> ${alert.frequency}</p>
+          <p><strong>WhatsApp:</strong> ${alert.whatsapp}</p>
+          <p><strong>Email:</strong> ${alert.email}</p>
+          <p><strong>Estado:</strong> ${String(alert.enabled) === "true" ? "✅ Activa" : "⛔ Inactiva"}</p>
+        `;
+        container.appendChild(card);
+      });
+    }
+  </script>
+</body>
+</html>

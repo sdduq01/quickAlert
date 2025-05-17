@@ -7,8 +7,7 @@
     --steel-gray: #f2f0eb;
     --pitch-black: #111111;
   }
-  
-  /* Reset básico */
+
   * {
     margin: 0;
     padding: 0;
@@ -23,14 +22,12 @@
     color: var(--snow-white);
   }
   
-  /* Contenedor principal */
   body {
     display: flex;
     justify-content: center;
     align-items: center;
   }
-  
-  /* Login container centrado */
+
   .login-container {
     background-color: var(--blue-navy);
     padding: 2rem;
@@ -40,15 +37,13 @@
     box-shadow: 0 8px 20px rgba(40, 0, 200, 0.5);
     text-align: center;
   }
-  
-  /* Logo */
+
   .logo {
     max-width: 180px;
     margin-bottom: 1.5rem;
     margin: 10%;
   }
   
-  /* Título */
   .title {
     font-size: 1.8rem;
     margin-bottom: 2rem;
@@ -56,21 +51,18 @@
     color: var(--sky-blue);
   }
   
-  /* Formularios */
   .form {
     display: flex;
     flex-direction: column;
     gap: 1rem;
   }
   
-  /* Etiquetas */
   .label {
     font-size: 0.95rem;
     text-align: left;
     color: var(--steel-gray);
   }
   
-  /* Campos de entrada */
   .input {
     padding: 0.75rem;
     border: none;
@@ -80,7 +72,6 @@
     color: var(--pitch-black);
   }
   
-  /* Botones */
   .primary-button,
   .secondary-button {
     padding: 0.75rem;
@@ -100,7 +91,7 @@
   }
   
   .primary-button:hover {
-    background-color: #3c1adf; /* un poco más claro que konecta-blue */
+    background-color: #3c1adf;
   }
   
   .secondary-button {
@@ -113,7 +104,6 @@
     background-color: #c5ceff;
   }
   
-  /* Enlaces */
   .form-links {
     display: flex;
     justify-content: space-between;
@@ -131,14 +121,12 @@
     text-decoration: underline;
   }
   
-  /* Línea divisora */
   .divider {
     margin: 1rem 0;
     font-size: 0.9rem;
     color: var(--sky-blue);
   }
   
-  /* Mensajes de error */
   .error-message {
     margin-top: 1rem;
     margin-bottom: 3rem;
@@ -151,19 +139,17 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 1.5rem; /* Margen respecto a otros elementos */
-    min-height: 50px; /* Altura mínima para evitar saltos */
+    margin-top: 1.5rem;
+    min-height: 50px;
   }
   
-  /* Estilo interno del botón (opcional si quieres forzar tamaño) */
   #google-button > div {
-    min-width: 280px !important; /* Forzar un ancho mínimo */
+    min-width: 280px !important;
     display: flex;
     justify-content: center;
   }
   
-  
   .google-button:hover {
-    background-color: var(--blue-navy); /* un poco más oscuro */
+    background-color: var(--blue-navy);
   }
   

@@ -57,7 +57,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  // Mostrar modal de confirmación
   document.getElementById("create-alert-button").addEventListener("click", () => {
     const campaign = campaignSelect.value;
     const metric = metricSelect.value;
@@ -70,7 +69,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
-    // Mostrar resumen dentro del modal
     const resumen = `
       <strong>Campaña:</strong> ${campaign}<br>
       <strong>Métrica:</strong> ${metric}<br>
@@ -83,10 +81,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("modal").classList.remove("hidden");
   });
 
-  // Botón Confirmar del modal
   document.getElementById("confirmAlertButton").addEventListener("click", confirmarCreacionAlerta);
 
-  // Botón Cancelar del modal
   document.getElementById("cancelAlertButton").addEventListener("click", () => {
     document.getElementById("modal").classList.add("hidden");
   });
@@ -125,7 +121,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       document.getElementById("resumen").innerHTML =
         `<p class="success-message">✅ Alerta creada exitosamente con ID: ${alertId}</p>`;
 
-      // Cerrar modal
       document.getElementById("modal").classList.add("hidden");
 
     } catch (error) {
