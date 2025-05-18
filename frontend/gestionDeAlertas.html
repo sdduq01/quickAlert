@@ -14,66 +14,61 @@
   </header>
 
   <main>
-    <section id="alerts-container" aria-live="polite">
+    <section id="alerts-container" aria-live="polite" aria-relevant="additions removals">
       <p>Cargando alertas...</p>
     </section>
   </main>
+
+  <!-- Modal de edición -->
+  <div id="editModal" class="modal" aria-hidden="true" style="display:none;">
+    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button id="closeModal" class="close" aria-label="Cerrar">&times;</button>
+      <h2 id="modalTitle">Editar Alerta</h2>
+      <form id="editAlertForm">
+        <input type="hidden" id="editAlertId" />
+        <label for="editCampaign">
+          Campaña:
+          <input type="text" id="editCampaign" name="campaign" required />
+        </label>
+        <label for="editMetric">
+          Métrica:
+          <input type="text" id="editMetric" name="metric" required />
+        </label>
+        <label for="editTarget">
+          Objetivo:
+          <input type="text" id="editTarget" name="target" required />
+        </label>
+        <label for="editFrequency">
+          Frecuencia:
+          <input type="text" id="editFrequency" name="frequency" required />
+        </label>
+        <label for="editWhatsapp">
+          WhatsApp:
+          <input type="text" id="editWhatsapp" name="whatsapp" />
+        </label>
+        <label for="editEmail">
+          Email:
+          <input type="email" id="editEmail" name="email" />
+        </label>
+        <label for="editEnabled">
+          Estado:
+          <select id="editEnabled" name="enabled">
+            <option value="true">Activa</option>
+            <option value="false">Inactiva</option>
+          </select>
+        </label>
+        <div class="modal-buttons">
+          <button type="submit">Guardar</button>
+          <button type="button" id="cancelEdit">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <footer class="footer">
     <p>&copy; 2025 QuickAlert - Konecta</p>
   </footer>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const userEmail = localStorage.getItem("userEmail");
-
-      if (!userEmail || !userEmail.endsWith("@konecta.com") && !userEmail.endsWith("@gmail.com")) {
-        alert("Debes iniciar sesión con un correo autorizado.");
-        window.location.href = "index.html";
-        return;
-      }
-
-      document.getElementById("user-info").textContent = `Sesión iniciada: ${userEmail}`;
-      fetchAlerts(userEmail);
-    });
-
-    function fetchAlerts(userEmail) {
-      const url = `https://management-alerts-vcl6o2ionq-uc.a.run.app/?user_email=${encodeURIComponent(userEmail)}`;
-      fetch(url)
-        .then(res => {
-          if (!res.ok) throw new Error("No se pudieron obtener las alertas");
-          return res.json();
-        })
-        .then(renderAlerts)
-        .catch(err => {
-          document.getElementById("alerts-container").innerHTML = `<p class="error">${err.message}</p>`;
-        });
-    }
-
-    function renderAlerts(alerts) {
-      const container = document.getElementById("alerts-container");
-      container.innerHTML = "";
-
-      if (alerts.length === 0) {
-        container.innerHTML = "<p>No tienes alertas configuradas.</p>";
-        return;
-      }
-
-      alerts.forEach(alert => {
-        const card = document.createElement("div");
-        card.className = "alert-card";
-        card.innerHTML = `
-          <h2>${alert.campaign}</h2>
-          <p><strong>Métrica:</strong> ${alert.metric}</p>
-          <p><strong>Objetivo:</strong> ${alert.target}</p>
-          <p><strong>Frecuencia:</strong> ${alert.frequency}</p>
-          <p><strong>WhatsApp:</strong> ${alert.whatsapp}</p>
-          <p><strong>Email:</strong> ${alert.email}</p>
-          <p><strong>Estado:</strong> ${String(alert.enabled) === "true" ? "✅ Activa" : "⛔ Inactiva"}</p>
-        `;
-        container.appendChild(card);
-      });
-    }
-  </script>
+  <script src="./js/gestionDeAlertas.js"></script>
 </body>
 </html>
